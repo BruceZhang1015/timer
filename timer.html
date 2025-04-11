@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pitch Competition Timer</title>
+  <!-- 在 <head> 中，继续保留字体引入部分 -->
+<link href="https://fonts.googleapis.com/css2?family=Arimo&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+    <style>
+    /* 注册 Extenda30 字体 */
+        @font-face {
+            font-family: 'Extenda30';
+            src: url('./fonts/Extenda30.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        #bg-video {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          object-fit: cover;
+          z-index: -1;
+          pointer-events: none;
+          filter: brightness(1); /* 可选：让背景视频更暗，前景更清楚 */
+        }
+
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          height: 100%;
+        }
+
+
+
+
+
+        body {
+            font-family: 'Extenda30', sans-serif;
+            text-align: center;
+            font-size: 40px;
+            color: white;
+            margin-top: 80px;
+        }
+
+        h1 {
+            font-family: 'Extenda30', sans-serif;
+            font-size: 60px;
+            margin-bottom: 0px;
+        }
+
+        @keyframes tick {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+
+        .tick-animation {
+          animation: tick 1s infinite;
+          text-shadow: 0 0 10px rgba(0,0,0,0.2);
+        } 
+
+
+        #timer {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 220px;
+            color: white;
+            letter-spacing: 4px;            
+  
+            transform-origin: center;
+            will-change: transform, opacity;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+
+
+
+        .warning {
+            color: red;
+        }
+
+        input {
+          font-size: 30px;
+          padding: 10px 10px;
+          margin: 0px;
+          border: none;
+          background-color: transparent;
+          color: white;
+          border-radius: 0;
+          width: 40px;
+          cursor: pointer;
+          font-family: 'Bebas Neue', sans-serif;
+          transition: all 0.3s ease;
+        }
+
+        button {
+          font-size: 40px;
+          padding: 10px 20px;
+          margin: 10px;
+          border: none;
+          background-color: transparent;
+          color: white;
+          border-radius: 0;
+          width: 90px;
+          cursor: pointer;
+          font-family: 'Extenda30', sans-serif;
+          transition: all 0.3s ease;
+        }
+
+        input[type="number"] {
+          background-color: rgba(255, 255, 255, 0.05);
+          color: white;
+          text-align: center;
+        }
+
+        button:hover {
+          border-color: white;
+          background-color: none;
+        }
+
+
+        #controls {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          margin-top: 30px;
+          position: relative;
+        }
+
+        #controls button {
+          opacity: 0;
+          pointer-events: none;
+          background-color: transparent;
+          border: none;
+          color: white;
+          font-size: 40px;
+          font-family: 'Extenda30', sans-serif;
+          transition: opacity 0.4s ease, transform 0.4s ease;
+          transform: scale(0.95);
+        }
+
+        #controls:hover button {
+          opacity: 1;
+          pointer-events: auto;
+          transform: scale(1);
+          
+
+        }
+
+        #setup-controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 15px;
+          margin-top: 30px;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.4s ease;
+        }
+
+        #setup-controls input {
+          font-size: 30px;
+          color: white;
+          background-color: transparent;
+          border: none;
+          border-radius: 0;
+          font-family: 'Bebas Neue', sans-serif;
+        }
+
+        #setup-controls button,
+        #setup-controls label {
+          font-size: 40px;
+          color: white;
+          background-color: transparent;
+          border: none;
+          border-radius: 0;
+          font-family: 'Extenda30', sans-serif;
+        }
+
+        #setup-controls input {
+          padding: 8px 12px;
+          border: 0px solid rgba(255,255,255,0.6);
+          width: 80px;
+          text-align: center;
+        }
+
+        #setup-controls button {
+          padding: 10px 20px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        #setup-controls button:hover {
+          background-color: rgba(255,255,255,0.1);
+        }
+
+        body:hover #setup-controls,
+        body:hover #controls {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+
+
+
+        input[type="number"] {
+            width: 80px;
+        }
+    </style>
+
+</head>
+<body>
+
+  <video autoplay muted loop playsinline id="bg-video">
+    <source src="assets/background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  
+
+  <div id="setup-controls">
+    <label for="minutes">Set Countdown Time:</label>
+    <input type="number" id="minutes" value="5" min="1" />
+    <button onclick="startTimer()">Start</button>
+  </div>
+  
+
+  <div id="timer">05:00</div>
+
+  <div id="controls">
+    <button onclick="togglePause()" id="pauseBtn"> Pause</button>
+    <button onclick="resetTimer()"> Restart</button>
+
+  </div>
+
+  <script>
+    let timer;
+    let totalSeconds = 0;
+    let paused = false;
+    let warningShown = false;
+    let hideMouseTimer = null;
+    let cursorHiddenManually = false;
+
+
+
+    const HIDE_DELAY = 1500; // 毫秒
+    const timerDisplay = document.getElementById("timer");
+    const pauseBtn = document.getElementById("pauseBtn");
+
+    document.addEventListener("mousemove", (e) => {
+      const y = e.clientY;
+      const threshold = 200; // 顶部100px区域
+      const setup = document.getElementById("setup-controls");
+
+      if (y <= threshold) {
+        setup.style.opacity = "1";
+        setup.style.pointerEvents = "auto";
+      } else {
+        setup.style.opacity = "0";
+        setup.style.pointerEvents = "none";
+      }
+    });
+
+
+
+    
+
+
+
+
+    function updateTimer() {
+      // ✅ 不论 paused 与否，都更新画面
+      let minutes = Math.floor(totalSeconds / 60);
+      let seconds = totalSeconds % 60;
+      timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      // ✅ 仅在运行状态下减少秒数
+      if (!paused && totalSeconds > 0) {
+        totalSeconds--;
+      }
+
+      // ✅ 最后一分钟动画触发逻辑
+      if (totalSeconds === 60) {
+        timerDisplay.classList.add("tick-animation");
+      }
+
+      // ✅ 时间到，停止计时器
+      if (totalSeconds === 0) {
+        clearInterval(timer);
+        timerDisplay.textContent = "Time's up!";
+        timerDisplay.classList.remove("tick-animation");
+      }
+    }
+
+
+    function startTimer() {
+      let mins = parseInt(document.getElementById("minutes").value);
+      if (isNaN(mins) || mins <= 0) {
+        alert("请输入一个大于0的分钟数");
+        return;
+      }
+      totalSeconds = mins * 60;
+      warningShown = false;
+      paused = true;
+      pauseBtn.textContent = "Continue";
+      timerDisplay.classList.remove("warning");
+      clearInterval(timer);
+      updateTimer(); // immediate update
+      timer = setInterval(updateTimer, 1000);
+      timerDisplay.classList.remove("tick-animation");
+    }
+
+    function resetTimer() {
+      startTimer();
+      pauseBtn.textContent = "Continue"; // 确保文字一致
+    }
+
+    function showSetupControls() {
+      const setup = document.getElementById("setup-controls");
+      setup.style.opacity = "1";
+      setup.style.pointerEvents = "auto";
+
+      // 可选：过几秒后自动隐藏
+      clearTimeout(showSetupControls._timeout);
+      showSetupControls._timeout = setTimeout(() => {
+        setup.style.opacity = "0";
+        setup.style.pointerEvents = "none";
+      }, 2000); // 3秒后隐藏
+    }
+
+    
+
+
+    function togglePause() {
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Continue" : "Pause";
+      if (paused) {
+        timerDisplay.classList.remove("tick-animation");
+      } else if (totalSeconds <= 60) {
+        timerDisplay.classList.add("tick-animation");
+      }
+
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        startMouseAutoHide(); // 启动鼠标隐藏逻辑
+      } else {
+        document.exitFullscreen();
+        document.body.style.cursor = "default"; // 退出全屏时恢复鼠标
+        clearTimeout(hideMouseTimer);
+      }
+    }
+
+// 启动时就设置监听
+window.onload = () => {
+  startMouseAutoHide();
+};
+
+// 键盘快捷键（按 F 进入/退出全屏）
+document.addEventListener("keydown", function (e) {
+  if (e.key === "f" || e.key === "F") {
+    toggleFullScreen();
+  }
+  
+});
+
+document.addEventListener("keydown", (e) => {
+      if (e.key === "h" || e.key === "H") {
+        if (document.fullscreenElement) {
+          document.body.style.cursor = "none";
+          cursorHiddenManually = true;
+        }
+      }
+    });
+
+document.addEventListener("mousemove", () => {
+  if (cursorHiddenManually) {
+    document.body.style.cursor = "default";
+    cursorHiddenManually = false;
+  }
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault(); // 防止默认表单行为
+    startTimer();       // 触发你的启动函数
+  }
+});
+
+
+document.addEventListener("keydown", function (e) {
+  const input = document.getElementById("minutes");
+  const setup = document.getElementById("setup-controls");
+  let value = parseInt(input.value) || 1;
+  const min = parseInt(input.min) || 1;
+
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    input.value = value + 1;
+    showSetupControls();
+  } else if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (value > min) {
+      input.value = value - 1;
+      showSetupControls();
+    }
+  }
+});
+
+
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "p" || e.key === "P") {
+    togglePause();
+  }
+  
+});
+
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "r" || e.key === "R") {
+    resetTimer();
+  }
+  
+});
+
+
+
+    // 自动加载时开始默认5分钟倒计时
+    window.onload = startTimer;
+  </script>
+
+</body>
+</html>
