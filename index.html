@@ -274,15 +274,18 @@
 
 
     function updateTimer() {
-      // ✅ 不论 paused 与否，都更新画面
-      let minutes = Math.floor(totalSeconds / 60);
-      let seconds = totalSeconds % 60;
-      timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
       // ✅ 仅在运行状态下减少秒数
       if (!paused && totalSeconds > 0) {
         totalSeconds--;
       }
+      
+      // ✅ 不论 paused 与否，都更新画面
+      let minutes = Math.floor(totalSeconds / 60);
+      let seconds = totalSeconds % 60;
+      timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      
 
       // ✅ 最后一分钟动画触发逻辑
       if (totalSeconds === 60) {
