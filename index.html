@@ -434,6 +434,18 @@ document.addEventListener("keydown", function (e) {
   
 });
 
+document.addEventListener("keydown", function (e) {
+  if (e.key === "a" || e.key === "A") {
+    const input = document.getElementById("minutes");
+    let addedMins = parseInt(input.value);
+    if (!isNaN(addedMins) && addedMins > 0) {
+      totalSeconds += addedMins * 60;
+      updateTimer(); // 立即刷新显示
+    }
+  }
+});
+
+
 
 
     // 自动加载时开始默认5分钟倒计时
